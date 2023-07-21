@@ -8,29 +8,29 @@ import { LinkContainer } from 'react-router-bootstrap';
 function App() {
   return (
     <BrowserRouter>
-    <div className="d-flex flex-column site-container">
-      <header>
-      <Navbar bg="dark" variant="dark">
+      <div className="d-flex flex-column site-container">
+        <header>
+          <Navbar bg="dark" variant="dark">
             <Container>
               <LinkContainer to="/">
-                <Navbar.Brand>Green Life</Navbar.Brand>
+                <Navbar.Brand>amazona</Navbar.Brand>
               </LinkContainer>
             </Container>
           </Navbar>
-      </header>
-      <main>
-      <Container>
+        </header>
+        <main>
+          <Container>
             <Routes>
               <Route path="/product/:slug" element={<ProductScreen />} />
               <Route path="/" element={<HomeScreen />} />
             </Routes>
           </Container>
-      </main>
-      <footer>
-          <div className="text-center">@GreenLife</div>
+        </main>
+        <footer>
+          <div className="text-center">All rights reserved</div>
         </footer>
-    </div>
-  </BrowserRouter>
+      </div>
+    </BrowserRouter>
   );
 }
 
