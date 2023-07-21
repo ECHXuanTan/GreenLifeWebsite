@@ -11,9 +11,9 @@ function App() {
       <div className="d-flex flex-column site-container">
         <header>
           <Navbar bg="dark" variant="dark">
-            <Container>
+            <Container className="mt-3">
               <LinkContainer to="/">
-                <Navbar.Brand>amazona</Navbar.Brand>
+                <Navbar.Brand>GreenLife</Navbar.Brand>
               </LinkContainer>
             </Container>
           </Navbar>
@@ -27,7 +27,7 @@ function App() {
           </Container>
         </main>
         <footer>
-          <div className="text-center">All rights reserved</div>
+          <div className="text-center">@GreenLife</div>
         </footer>
       </div>
     </BrowserRouter>

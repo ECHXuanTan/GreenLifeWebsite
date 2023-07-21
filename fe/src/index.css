@@ -41,3 +41,19 @@ main {
 .card-text{
   font-weight: 600;
 }
+
+.img-large {
+  width: 100%;
+  max-width: 500px;
+}
+
+.product-detail{
+ margin-top: 15px;
+}
+
+.product-price{
+  color: #008749;
+  font-size: 1.5em !important;
+  font-weight: 550;
+  font-family: Quicksand, sans-serif;
+}
