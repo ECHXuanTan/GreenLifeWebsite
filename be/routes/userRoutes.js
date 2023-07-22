@@ -22,7 +22,7 @@ userRouter.post(
         return;
       }
     }
-    res.status(401).send({ message: 'Invalid email or password' });
+    res.status(401).send({ message: 'Sai Email hoặc mật khẩu' });
   })
 );
 
