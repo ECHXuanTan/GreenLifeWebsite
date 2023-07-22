@@ -7,7 +7,7 @@ const data = {
         category: 'outDoor',
         image: '/images/p1.jpg', // 679px × 829px
         price: 160000,
-        countInStock: 10,
+        countInStock: 0,
         rating: 4.5,
         numReviews: 10,
         description: 'Có tác dụng thanh lọc không khí trong nhà mà còn chứa đựng ý nghĩa phong thủy rất tốt, mang dáng vẻ thanh lịch và sang trọng.',
