@@ -27,7 +27,7 @@ const data = {
         countInStock: 0,
         rating: 4.5,
         numReviews: 10,
-        brand: 'Product Brand',
+        weight: 250000,
         description: 'Có tác dụng thanh lọc không khí trong nhà mà còn chứa đựng ý nghĩa phong thủy rất tốt, mang dáng vẻ thanh lịch và sang trọng.',
       },
       {
@@ -40,7 +40,7 @@ const data = {
         countInStock: 20,
         rating: 4.0,
         numReviews: 10,
-        brand: 'Product Brand',
+        weight: 200000,
         description: 'Cây cọ nhật là loại cây trong nhà có kiểu lá xòe rộng như những cánh quạt, giúp trang trí không gian thêm xanh mát. Nó còn là loại cây phong thủy tượng trưng cho sự giàu sang và tiền tài nên rất đáng trồng trên bàn làm việc.',
       },
       {
@@ -53,7 +53,7 @@ const data = {
         countInStock: 15,
         rating: 4.5,
         numReviews: 14,
-        brand: 'Product Brand',
+        weight: 200000,
         description: 'Cây hồng môn được biết tới là một loại cây cảnh mang lại điều tốt lành, có thể giúp điều hòa khí phong thủy trong nhà, có khả năng thu hút những dòng khí tích cực và làm tiêu bớt dòng khí tiêu cực cho môi trường xung quanh, trồng cây hồng môn trong nhà sẽ giúp không gian sống trở nên hài hòa và bình yên hơn.',
       },
       {
@@ -66,7 +66,7 @@ const data = {
         countInStock: 5,
         rating: 4.5,
         numReviews: 10,
-        brand: 'Product Brand',
+        weight: 200000,
         description: 'Ngũ gia bì là loại cây mang lại tài vận, thịnh vượng và may mắn, trồng trong nhà sẽ mang đến một không gian thư thái, trong lành cho gia đình.',
       },
     ],
