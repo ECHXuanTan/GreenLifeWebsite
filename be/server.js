@@ -25,6 +25,11 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 
+app.get('/api/keys/paypal', (req, res) => {
+  res.send(process.env.PAYPAL_CLIENT_ID || 'sb');
+});
+
+
 const PORT_PROXY = 3001; // Choose a port for your proxy server
 
 app.post('/api/shipment/fee', async (req, res) => {
