@@ -47,7 +47,7 @@ export default function ShippingAddressScreen() {
         phoneNumber,
       })
     );
-    navigate('/payment');
+    navigate('/placeorder');
   };
   return (
     <div>

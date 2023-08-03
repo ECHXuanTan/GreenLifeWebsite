@@ -1,0 +1,5 @@
+{
+    "merchantCode":"1SNJ89L8",
+    "secretKey":"ODJLXOCEWMFIEJXHJNMZUVFFVRDDXLOT",
+    "returnUrl": "http://sandbox.vnpayment.vn/tryitnow/Home/VnPayReturn"
+}

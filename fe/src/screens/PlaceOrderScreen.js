@@ -114,7 +114,6 @@ export default function PlaceOrderScreen() {
         {
           orderItems: cart.cartItems,
           shippingAddress: cart.shippingAddress,
-          paymentMethod: cart.paymentMethod,
           itemsPrice: cart.itemsPrice,
           shippingPrice: cart.shippingPrice,
           taxPrice: cart.taxPrice,
@@ -135,15 +134,10 @@ export default function PlaceOrderScreen() {
       toast.error(getError(err));
     }
   };
-  useEffect(() => {
-    if (!cart.paymentMethod) {
-      navigate('/payment');
-    }
-  }, [cart, navigate]);
 
   return (
     <div>
-      <CheckoutSteps step1 step2 step3 step4></CheckoutSteps>
+      <CheckoutSteps step1 step2 step3></CheckoutSteps>
       <Helmet>
         <title>Đặt hàng</title>
       </Helmet>
@@ -160,16 +154,6 @@ export default function PlaceOrderScreen() {
                 {cart.shippingAddress.city},
               </Card.Text>
               <Link to="/shipping">Thay đổi</Link>
-            </Card.Body>
-          </Card>
-
-          <Card className="mb-3">
-            <Card.Body>
-              <Card.Title>Thanh toán</Card.Title>
-              <Card.Text>
-                <strong>Phương thức:</strong> {cart.paymentMethod}
-              </Card.Text>
-              <Link to="/payment">Thay đổi</Link>
             </Card.Body>
           </Card>
 
