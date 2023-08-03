@@ -1,5 +1,5 @@
 import axios from 'axios';
-import React, { useContext, useEffect, useReducer } from 'react';
+import React, { useContext, useEffect, useReducer, useState } from 'react';
 import { PayPalButtons, usePayPalScriptReducer } from '@paypal/react-paypal-js';
 import { Helmet } from 'react-helmet-async';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -34,6 +34,11 @@ function reducer(state, action) {
       return state;
   }
 }
+
+const instance = axios.create({
+  baseUR: 'http://localhost:5000',
+});
+
 export default function OrderScreen() {
   const { state } = useContext(Store);
   const { userInfo } = state;
@@ -93,6 +98,42 @@ export default function OrderScreen() {
   }
 
   useEffect(() => {
+
+    
+
+     // Create a URLSearchParams object
+  const urlParams = new URLSearchParams(window.location.search);
+  
+  // Use the .get method to get the value of `vnp_ResponseCode`
+  const vnpResponseCode = urlParams.get('vnp_ResponseCode');
+  
+  // Log the value
+  console.log('vnp_ResponseCode:', vnpResponseCode);
+
+  if (!order._id || vnpResponseCode === '00') {
+    // Payment successful, update the order status
+    axios.put(
+      `/api/orders/${order._id}/pay`, 
+      {
+        id: urlParams.get('vnp_TransactionNo'),
+        status: 'COMPLETED',
+        update_time: new Date().toISOString(),
+      },
+      {
+        headers: { authorization: `Bearer ${userInfo.token}` },
+      }
+    )
+    .then(() => {
+      toast.success('Thanh toán thành công');
+      // Refresh the order details
+      fetchOrder();
+      window.history.replaceState({}, document.title, window.location.pathname);
+    })
+    .catch((error) => {
+      console.error('Error updating order status:', error);
+    });
+  }
+
     const fetchOrder = async () => {
       try {
         dispatch({ type: 'FETCH_REQUEST' });
@@ -130,6 +171,22 @@ export default function OrderScreen() {
       loadPaypalScript();
     }
   }, [order, userInfo, orderId, navigate, paypalDispatch, successPay]);
+
+  function onVnpayClick() {
+    const returnUrl = `http://localhost:3000/order/${order._id}`
+
+    instance.get('/api/vnpayRouter/create_payment_url', {
+      params: {
+        amount: order.totalPrice, // Set the amount as order.totalPrice
+        returnUrl,
+      },
+    }).then((response) => {
+      // Redirect the browser to the VNPAY URL after receiving the response
+      window.location.href = response.data.url;
+    }).catch((error) => {
+      console.error('Error fetching VNPAY URL', error);
+    });
+  }
   return loading ? (
     <LoadingBox></LoadingBox>
   ) : error ? (
@@ -163,9 +220,7 @@ export default function OrderScreen() {
           <Card className="mb-3">
             <Card.Body>
               <Card.Title>Thanh toán</Card.Title>
-              <Card.Text>
-                <strong>Phương thức:</strong> {order.paymentMethod}
-              </Card.Text>
+
               {order.isPaid ? (
                 <MessageBox variant="success">
                   Đã thanh toán {order.paidAt}
@@ -249,6 +304,11 @@ export default function OrderScreen() {
                       </div>
                     )}
                     {loadingPay && <LoadingBox></LoadingBox>}
+                    <div>
+                      <button className="vnpay-button-style" onClick={onVnpayClick}>
+                        VNPAY
+                      </button>
+                    </div>
                   </ListGroup.Item>
                 )}
               </ListGroup>

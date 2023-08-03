@@ -74,3 +74,21 @@ main {
   border-bottom: 0.2rem solid #f08000;
   color: #f08000;
 }
+
+.vnpay-button-style {
+  /* Add the same styling as the PayPal button */
+  color: #fff;
+  background-color: #0070ba;
+  border: none;
+  padding: 12px 24px;
+  font-size: 16px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  width: 350px;
+  font-weight: 600;
+}
+
+.vnpay-button-style:hover {
+  background-color: #005ea3;
+}

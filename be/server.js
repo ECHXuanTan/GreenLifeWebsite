@@ -1,13 +1,15 @@
 import express from 'express';
-import data from './data.js';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
-import seedRouter from './routes/seedRoutes.js';
-import productRouter from './routes/productRoutes.js';
-import userRouter from './routes/userRoutes.js';
-import orderRouter from './routes/orderRoutes.js';
+import seedRouter from './routers/seedRouter.js';
+import productRouter from './routers/productRouter.js';
+import userRouter from './routers/userRouter.js';
+import orderRouter from './routers/orderRouter.js';
+import router  from './routers/vnpayRouter.js';
 import fetch from 'node-fetch';
 import cors from 'cors';
+import { createProxyMiddleware } from 'http-proxy-middleware';
+
 
 dotenv.config();
 
@@ -23,11 +25,23 @@ mongoose
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(cors());
+app.use(cors({
+  origin: 'http://localhost:3000'
+}));
+
+app.use('/api/proxy', createProxyMiddleware({
+  target: 'https://sandbox.vnpayment.vn', // target host
+  changeOrigin: true, // needed for virtual hosted sites
+  pathRewrite: {
+    ['^/api/proxy']: '/paymentv2', // rewrite path
+  },
+}));
 
 app.get('/api/keys/paypal', (req, res) => {
   res.send(process.env.PAYPAL_CLIENT_ID || 'sb');
 });
+
+app.use('/api/vnpayRouter', router );
 
 
 const PORT_PROXY = 3001; // Choose a port for your proxy server
@@ -48,7 +62,7 @@ app.post('/api/shipment/fee', async (req, res) => {
 
     const data = await response.json();
     res.json(data);
-  } catch (error) {
+  } catch (error) {-
     console.error('Error fetching data:', error.message);
     res.status(500).json({ error: 'Something went wrong' });
   }

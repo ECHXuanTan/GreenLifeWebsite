@@ -19,4 +19,14 @@ const productSchema = new mongoose.Schema(
 );
 
 const Product = mongoose.model('Product', productSchema);
+export async function getProductData() {
+  // Fetch all products from the collection
+  try {
+    const products = await Product.find({});
+    return products;
+  } catch (error) {
+    console.error('Error fetching product data:', error);
+    return [];
+  }
+}
 export default Product;
