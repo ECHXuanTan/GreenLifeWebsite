@@ -1,4 +1,4 @@
-import { useEffect, useReducer, useState } from 'react';
+import { useEffect, useReducer } from 'react';
 import axios from 'axios';
 import logger from 'use-reducer-logger';
 import Row from 'react-bootstrap/Row';
@@ -7,6 +7,7 @@ import Product from '../components/Product';
 import { Helmet } from 'react-helmet-async';
 import MessageBox from '../components/MessageBox';
 import LoadingBox from '../components/LoadingBox';
+import ChatBot from '../components/ChatBot';
 // import data from '../data';
 
 const reducer = (state, action) => {
@@ -64,6 +65,7 @@ function HomeScreen() {
           </Row>
         )}
       </div>
+      <ChatBot />
     </div>
   );
 }
