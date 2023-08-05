@@ -52,10 +52,10 @@ export default function OrderHistoryScreen() {
   return (
     <div>
       <Helmet>
-        <title>Order History</title>
+        <title>Lịch sử đơn hàng</title>
       </Helmet>
 
-      <h1>Order History</h1>
+      <h1>Lịch sử đơn hàng</h1>
       {loading ? (
         <LoadingBox></LoadingBox>
       ) : error ? (
@@ -64,12 +64,11 @@ export default function OrderHistoryScreen() {
         <table className="table">
           <thead>
             <tr>
-              <th>ID</th>
-              <th>DATE</th>
-              <th>TOTAL</th>
-              <th>PAID</th>
-              <th>DELIVERED</th>
-              <th>ACTIONS</th>
+              <th>Mã đơn hàng</th>
+              <th>Ngày đặt</th>
+              <th>Tổng tiền</th>
+              <th>Thời gian thanh toán</th>
+              <th>Vận chuyển</th>
             </tr>
           </thead>
           <tbody>
@@ -82,7 +81,7 @@ export default function OrderHistoryScreen() {
                 <td>
                   {order.isDelivered
                     ? order.deliveredAt.substring(0, 10)
-                    : 'No'}
+                    : 'Chờ gửi hàng'}
                 </td>
                 <td>
                   <Button
@@ -92,7 +91,7 @@ export default function OrderHistoryScreen() {
                       navigate(`/order/${order._id}`);
                     }}
                   >
-                    Details
+                    Xem chi tiết
                   </Button>
                 </td>
               </tr>

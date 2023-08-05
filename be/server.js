@@ -1,11 +1,11 @@
 import express from 'express';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
-import seedRouter from './routers/seedRouter.js';
-import productRouter from './routers/productRouter.js';
-import userRouter from './routers/userRouter.js';
-import orderRouter from './routers/orderRouter.js';
-import router  from './routers/vnpayRouter.js';
+import seedRouter from './routes/seedRoute.js';
+import productRouter from './routes/productRoute.js';
+import userRouter from './routes/userRoute.js';
+import orderRouter from './routes/orderRoute.js';
+import router  from './routes/vnpayRoute.js';
 import fetch from 'node-fetch';
 import cors from 'cors';
 import { createProxyMiddleware } from 'http-proxy-middleware';
