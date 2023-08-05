@@ -36,7 +36,7 @@ function reducer(state, action) {
 }
 
 const instance = axios.create({
-  baseUR: 'http://localhost:5000',
+  baseURL: 'http://localhost:5000',
 });
 
 export default function OrderScreen() {
