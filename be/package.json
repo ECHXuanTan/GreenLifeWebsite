@@ -13,6 +13,7 @@
   "dependencies": {
     "axios": "^1.4.0",
     "bcryptjs": "^2.4.3",
+    "cloudinary": "^1.40.0",
     "cors": "^2.8.5",
     "crypto": "^1.0.1",
     "dotenv": "^10.0.0",
@@ -21,10 +22,12 @@
     "jsonwebtoken": "^9.0.1",
     "moment": "^2.29.4",
     "mongoose": "^6.11.4",
+    "multer": "^1.4.5-lts.1",
     "ngan-luong-2x": "^1.0.9",
     "node-fetch": "^3.3.1",
     "node-vnpay": "^1.0.1",
-    "qs": "^6.11.2"
+    "qs": "^6.11.2",
+    "streamifier": "^0.1.1"
   },
   "devDependencies": {
     "http-proxy-middleware": "^2.0.6",

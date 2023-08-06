@@ -33,14 +33,26 @@ const reducer = (state, action) => {
     };
     case 'CREATE_FAIL':
     return { ...state, loadingCreate: false };
+    case 'DELETE_REQUEST':
+      return { ...state, loadingDelete: true, successDelete: false };
+    case 'DELETE_SUCCESS':
+      return {
+        ...state,
+        loadingDelete: false,
+        successDelete: true,
+      };
+    case 'DELETE_FAIL':
+      return { ...state, loadingDelete: false, successDelete: false };
 
+    case 'DELETE_RESET':
+      return { ...state, loadingDelete: false, successDelete: false };
     default:
       return state;
   }
 };
 
 export default function ProductListScreen() {
-  const [{ loading, error, products, pages, loadingCreate }, dispatch] = useReducer(reducer, {
+  const [{ loading, error, products, pages, loadingCreate, loadingDelete, successDelete, }, dispatch] = useReducer(reducer, {
     loading: true,
     error: '',
   });
@@ -63,15 +75,15 @@ export default function ProductListScreen() {
         dispatch({ type: 'FETCH_SUCCESS', payload: data });
       } catch (err) {}
     };
-    fetchData();
-  }, [page, userInfo]);
-
-  const instance = axios.create({
-    baseURL: 'http://localhost:5000',
-  });
+    if (successDelete) {
+      dispatch({ type: 'DELETE_RESET' });
+    } else {
+      fetchData();
+    }
+  }, [page, userInfo, successDelete]);
 
   const createHandler = async () => {
-    if (window.confirm('Are you sure to create?')) {
+    if (window.confirm('Bạn muốn tạo mới sản phẩm?')) {
       try {
         dispatch({ type: 'CREATE_REQUEST' });
         const { data } = await axios.post(
@@ -81,13 +93,30 @@ export default function ProductListScreen() {
             headers: { Authorization: `Bearer ${userInfo.token}` },
           }
         );
-        toast.success('product created successfully');
+        toast.success('Tạo sản phẩm thành công');
         dispatch({ type: 'CREATE_SUCCESS' });
         navigate(`/admin/product/${data.product._id}`);
       } catch (err) {
         toast.error(getError(error));
         dispatch({
           type: 'CREATE_FAIL',
+        });
+      }
+    }
+  };
+
+  const deleteHandler = async (product) => {
+    if (window.confirm('Bạn chắc chắn xóa sản phẩm này?')) {
+      try {
+        await axios.delete(`/api/products/${product._id}`, {
+          headers: { Authorization: `Bearer ${userInfo.token}` },
+        });
+        toast.success('Xóa sản phẩm thành công');
+        dispatch({ type: 'DELETE_SUCCESS' });
+      } catch (err) {
+        toast.error(getError(error));
+        dispatch({
+          type: 'DELETE_FAIL',
         });
       }
     }
@@ -109,6 +138,7 @@ export default function ProductListScreen() {
       </Row>
 
       {loadingCreate && <LoadingBox></LoadingBox>}
+      {loadingDelete && <LoadingBox></LoadingBox>}
       {loading ? (
         <LoadingBox></LoadingBox>
       ) : error ? (
@@ -138,6 +168,14 @@ export default function ProductListScreen() {
                       onClick={() => navigate(`/admin/product/${product._id}`)}
                     >
                       Chỉnh sửa
+                    </Button>
+                    &nbsp;
+                    <Button
+                      type="button"
+                      variant="light"
+                      onClick={() => deleteHandler(product)}
+                    >
+                      Xóa
                     </Button>
                   </td>
                 </tr>
