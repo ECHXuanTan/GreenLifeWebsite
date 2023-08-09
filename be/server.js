@@ -10,6 +10,7 @@ import uploadRouter from './routes/uploadRoute.js';
 import fetch from 'node-fetch';
 import cors from 'cors';
 import { createProxyMiddleware } from 'http-proxy-middleware';
+import path from 'path';
 
 
 dotenv.config();
@@ -74,6 +75,12 @@ app.use('/api/seed', seedRouter);
 app.use('/api/products', productRouter);
 app.use('/api/users', userRouter);
 app.use('/api/orders', orderRouter);
+
+const __dirname = path.resolve();
+app.use(express.static(path.join(__dirname, '/fe/build')));
+app.get('*', (req, res) =>
+  res.sendFile(path.join(__dirname, '/fe/build/index.html'))
+);
 
 
 const port = process.env.PORT || 5000;
