@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "cd be && npm install && cd ../fe && npm install use-reducer-logger --legacy-peer-deps && npm install && npm run build --force",
+    "build": "cd be && npm install && cd ../fe && npm install use-reducer-logger --legacy-peer-deps && npm install && npm run build",
     "start": "concurrently \"cd be && npm start\" \"cd fe && npm start\"",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -26,6 +26,7 @@
     "react-router-dom": "^6.2.1",
     "react-scripts": "5.0.0",
     "react-toastify": "^9.1.3",
+    "use-reducer-logger": "^1.0.2",
     "web-vitals": "^2.1.2"
   },
   "devDependencies": {
