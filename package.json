@@ -15,5 +15,10 @@
   },
   "devDependencies": {
     "concurrently": "^8.2.0"
+  },
+  "engines": {
+    "node": "16.0",
+    "npm": "9.8.1"
   }
+  
 }
