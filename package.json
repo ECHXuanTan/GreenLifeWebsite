@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "cd be && npm install && cd ../fe && npm install && npm run build --force",
+    "build": "cd be && npm install && cd ../fe && npm install use-reducer-logger --legacy-peer-deps && npm install && npm run build --force",
     "start": "concurrently \"cd be && npm start\" \"cd fe && npm start\"",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
