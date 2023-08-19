@@ -31,13 +31,6 @@ app.use(cors({
   origin: 'http://localhost:3000'
 }));
 
-app.use('/api/proxy', createProxyMiddleware({
-  target: 'https://sandbox.vnpayment.vn', // target host
-  changeOrigin: true, // needed for virtual hosted sites
-  pathRewrite: {
-    ['^/api/proxy']: '/paymentv2', // rewrite path
-  },
-}));
 
 app.get('/api/keys/paypal', (req, res) => {
   res.send(process.env.PAYPAL_CLIENT_ID || 'sb');

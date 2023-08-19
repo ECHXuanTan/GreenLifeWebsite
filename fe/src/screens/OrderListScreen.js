@@ -81,6 +81,7 @@ export default function OrderListScreen() {
                 <td>{order.createdAt.substring(0, 10)}</td>
                 <td>{order.totalPrice.toFixed(2)}đ</td>
                 <td>{order.isPaid ? order.paidAt.substring(0, 10) : 'Chưa thanh toán'}</td>
+                
                 <td>
                   {order.isDelivered
                     ? order.deliveredAt.substring(0, 10)
