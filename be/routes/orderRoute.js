@@ -141,4 +141,18 @@
       })
     );
 
+    orderRouter.delete(
+      '/:id',
+      isAuth,
+      isAdmin,
+      expressAsyncHandler(async (req, res) => {
+        const order = await Order.findById(req.params.id);
+        if (order) {
+          await order.deleteOne();
+          res.send({ message: 'Xóa đơn hàng thành công' });
+    } else {
+      res.status(404).send({ message: 'Đơn hàng không tìm thấy' });
+    }
+  })
+);
   export default orderRouter;
