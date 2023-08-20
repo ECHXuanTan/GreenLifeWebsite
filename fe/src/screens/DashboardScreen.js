@@ -50,6 +50,20 @@ export default function DashboardScreen() {
         };
         fetchData();
       }, [userInfo]);
+
+      const handleAudience = async () => {
+    
+
+          try {
+            const response = await axios.get(`/api/mailchimp/audiance`);
+            console.log(response.data);
+          } catch (error) {
+            console.error("Error get audience:", error);
+          }
+        
+      };
+
+
     
       return (
         <div>

@@ -11,6 +11,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@mailchimp/mailchimp_marketing": "^3.0.80",
     "axios": "^1.4.0",
     "bcryptjs": "^2.4.3",
     "cloudinary": "^1.40.0",

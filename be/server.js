@@ -7,6 +7,7 @@ import userRouter from './routes/userRoute.js';
 import orderRouter from './routes/orderRoute.js';
 import router  from './routes/vnpayRoute.js';
 import uploadRouter from './routes/uploadRoute.js';
+import mailchimpRoute from './routes/mailchimpRoute.js';
 import fetch from 'node-fetch';
 import cors from 'cors';
 import { createProxyMiddleware } from 'http-proxy-middleware';
@@ -38,7 +39,7 @@ app.get('/api/keys/paypal', (req, res) => {
 
 app.use('/api/vnpayRouter', router );
 app.use('/api/upload', uploadRouter);
-
+app.use('/api/mailchimp', mailchimpRoute);
 
 const PORT_PROXY = 3001; // Choose a port for your proxy server
 
