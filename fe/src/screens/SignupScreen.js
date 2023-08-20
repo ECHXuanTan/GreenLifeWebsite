@@ -25,7 +25,7 @@ export default function SignupScreen() {
   const submitHandler = async (e) => {
     e.preventDefault();
     if (password !== confirmPassword) {
-      toast.error('Passwords do not match');
+      toast.error('Mật khẩu không trùng khớp');
       return;
     }
     try {
