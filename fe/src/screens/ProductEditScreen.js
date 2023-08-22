@@ -56,7 +56,10 @@ export default function ProductEditScreen() {
   const [price, setPrice] = useState('');
   const [image, setImage] = useState('');
   const [category, setCategory] = useState('');
+  const [style, setStyle] = useState('');
+  const [place, setPlace] = useState('');
   const [countInStock, setCountInStock] = useState('');
+  const [countInDisplay, setCountInDisplay] = useState('');
   const [description, setDescription] = useState('');
   const [weight, setWeight] = useState('');
 
@@ -70,7 +73,10 @@ export default function ProductEditScreen() {
         setPrice(data.price);
         setImage(data.image);
         setCategory(data.category);
+        setStyle(data.style);
+        setPlace(data.place);
         setCountInStock(data.countInStock);
+        setCountInDisplay(data.countInDisplay);
         setWeight(data.weight);
         setDescription(data.description);
         dispatch({ type: 'FETCH_SUCCESS' });
@@ -97,7 +103,10 @@ export default function ProductEditScreen() {
           price,
           image,
           category,
+          style,
+          place,
           countInStock,
+          countInDisplay,
           weight,
           description,
         },
@@ -196,11 +205,35 @@ export default function ProductEditScreen() {
               required
             />
           </Form.Group>
+          <Form.Group className="mb-3" controlId="category">
+            <Form.Label>Kiểu dáng cây</Form.Label>
+            <Form.Control
+              value={style}
+              onChange={(e) => setStyle(e.target.value)}
+              required
+            />
+          </Form.Group>
+          <Form.Group className="mb-3" controlId="category">
+            <Form.Label>Vị trí đặt</Form.Label>
+            <Form.Control
+              value={place}
+              onChange={(e) => setPlace(e.target.value)}
+              required
+            />
+          </Form.Group>
           <Form.Group className="mb-3" controlId="countInStock">
-            <Form.Label>Số lượng</Form.Label>
+            <Form.Label>Số lượng tồn kho</Form.Label>
             <Form.Control
               value={countInStock}
               onChange={(e) => setCountInStock(e.target.value)}
+              required
+            />
+          </Form.Group>
+          <Form.Group className="mb-3" controlId="countInDisplay">
+            <Form.Label>Số lượng hiển thị</Form.Label>
+            <Form.Control
+              value={countInDisplay}
+              onChange={(e) => setCountInDisplay(e.target.value)}
               required
             />
           </Form.Group>

@@ -153,7 +153,7 @@ export default function PlaceOrderScreen() {
                 <strong>Địa chỉ: </strong> {cart.shippingAddress.address},{cart.shippingAddress.district},
                 {cart.shippingAddress.city},
               </Card.Text>
-              <Link to="/shipping">Thay đổi</Link>
+              <Link className='text-decoration-none' to="/shipping">Thay đổi</Link>
             </Card.Body>
           </Card>
 
@@ -170,7 +170,7 @@ export default function PlaceOrderScreen() {
                           alt={item.name}
                           className="img-fluid rounded img-thumbnail"
                         ></img>{' '}
-                        <Link to={`/product/${item.slug}`}>{item.name}</Link>
+                        <Link className='text-decoration-none' to={`/product/${item.slug}`}>{item.name}</Link>
                       </Col>
                       <Col md={3}>
                         <span>{item.quantity}</span>
@@ -180,7 +180,7 @@ export default function PlaceOrderScreen() {
                   </ListGroup.Item>
                 ))}
               </ListGroup>
-              <Link to="/cart">Thay đổi</Link>
+              <Link className='text-decoration-none' to="/cart">Thay đổi</Link>
             </Card.Body>
           </Card>
 

@@ -46,22 +46,22 @@ export default function CartScreen() {
         <Col md={8}>
           {cartItems.length === 0 ? (
             <MessageBox>
-              Giỏ hàng đang trống. <Link to="/">Hãy mua gì đó</Link>
+              Giỏ hàng đang trống. <Link className='text-decoration-none' to="/">Hãy mua gì đó</Link>
             </MessageBox>
           ) : (
             <ListGroup>
               {cartItems.map((item) => (
                 <ListGroup.Item key={item._id}>
                   <Row className="align-items-center">
-                    <Col md={4}>
+                    <Col md={6}>
                       <img
                         src={item.image}
                         alt={item.name}
                         className="img-fluid rounded img-thumbnail"
                       ></img>{' '}
-                      <Link to={`/product/${item.slug}`}>{item.name}</Link>
+                      <Link className='text-decoration-none' to={`/product/${item.slug}`}>{item.name}</Link>
                     </Col>
-                    <Col md={3}>
+                    <Col md={2}>
                     <Button
                         onClick={() =>
                           updateCartHandler(item, item.quantity - 1)
@@ -82,7 +82,7 @@ export default function CartScreen() {
                         <i className="fas fa-plus-circle"></i>
                       </Button>
                     </Col>
-                    <Col md={3}>{item.price}đ</Col>
+                    <Col md={2}>{item.price}đ</Col>
                     <Col md={2}>
                     <Button
                         onClick={() => removeItemHandler(item)}

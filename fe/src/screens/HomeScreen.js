@@ -112,7 +112,7 @@ function HomeScreen() {
   
     </div>
     <div className="content">
-      <h1 className = "h1-content">Sản phẩm mới</h1>
+      <h1 className = "h1-content">Tất cả sản phẩm</h1>
       <div className="products">
         {loading ? (
           <LoadingBox />

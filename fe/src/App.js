@@ -32,11 +32,14 @@ import axios from 'axios';
 import SearchBox from './components/SearchBox';
 import UserListScreen from './screens/UserListScreen';
 import UserEditScreen from './screens/UserEditScreen';
+import ReactGA from 'react-ga4';
+
 
 function App() {
   const { state, dispatch: ctxDispatch } = useContext(Store);
   const { cart, userInfo } = state;
-
+  const Tracking_ID = 'G-DGTK9CB1L0';
+  ReactGA.initialize(Tracking_ID);
   const signoutHandler = () => {
     ctxDispatch({ type: 'USER_SIGNOUT' });
     localStorage.removeItem('userInfo');
@@ -47,6 +50,7 @@ function App() {
 
   const [sidebarIsOpen, setSidebarIsOpen] = useState(false);
   const [categories, setCategories] = useState([]);
+  const [styles, setStyles] = useState([]);
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -58,6 +62,17 @@ function App() {
       }
     };
     fetchCategories();
+
+    const fetchStyles = async () => {
+      try {
+        const { data } = await axios.get(`/api/products/styles`);
+        setStyles(data);
+      } catch (err) {
+        toast.error(getError(err));
+      }
+    };
+    fetchStyles();
+    ReactGA.send({hittype: "pageview", page: '/'});
   }, []);
 
   function renderUI(categoryValue) {
@@ -81,7 +96,7 @@ function App() {
         }>
       <ToastContainer position="bottom-center" limit={1} />
         <header>
-          <Navbar bg="dark" variant="dark" expand="lg">
+          <Navbar className='header-navbar' variant="dark" expand="lg">
             <Container className="mt-3">
             <Button
                 variant="dark"

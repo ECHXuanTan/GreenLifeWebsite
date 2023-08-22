@@ -47,8 +47,41 @@ productRouter.put(
       product.price = req.body.price;
       product.image = req.body.image;
       product.category = req.body.category;
+      product.style = req.body.style;
+      product.place = req.body.place;
       product.countInStock = req.body.countInStock;
+      product.countInDisplay = req.body.countInDisplay;
       product.description = req.body.description;
+      await product.save();
+      res.send({ message: 'Product Updated' });
+    } else {
+      res.status(404).send({ message: 'Product Not Found' });
+    }
+  })
+);
+
+productRouter.put(
+  '/paid/:id',
+  expressAsyncHandler(async (req, res) => {
+    const productId = req.params.id;
+    const product = await Product.findById(productId);
+    if (product) {
+      product.countInDisplay = req.body.countInDisplay;
+      await product.save();
+      res.send({ message: 'Product Updated' });
+    } else {
+      res.status(404).send({ message: 'Product Not Found' });
+    }
+  })
+);
+
+productRouter.put(
+  '/delivered/:id',
+  expressAsyncHandler(async (req, res) => {
+    const productId = req.params.id;
+    const product = await Product.findById(productId);
+    if (product) {
+      product.countInStock = req.body.countInStock;
       await product.save();
       res.send({ message: 'Product Updated' });
     } else {
@@ -63,15 +96,18 @@ productRouter.post(
   isAdmin,
   expressAsyncHandler(async (req, res) => {
     const newProduct = new Product({
-      name: 'sample name ' + Date.now(),
-      slug: 'sample-name-' + Date.now(),
+      name: 'vi du' ,
+      slug: 'vi-du-',
       image: '/images/p1.jpg',
       price: 0,
-      category: 'sample category',
+      category: 'vi du',
+      style: 'vi du',
+      place: 'vi du',
       countInStock: 0,
+      countInDisplay: 0,
       rating: 0,
       numReviews: 0,
-      description: 'sample description',
+      description: 'vi du',
       weight: 0,
     });
     const product = await newProduct.save();
@@ -123,6 +159,8 @@ productRouter.get(
     const pageSize = query.pageSize || PAGE_SIZE;
     const page = query.page || 1;
     const category = query.category || '';
+    const style = query.style || '';
+    const place = query.place || '';
     const price = query.price || '';
     const rating = query.rating || '';
     const order = query.order || '';
@@ -138,6 +176,8 @@ productRouter.get(
           }
         : {};
     const categoryFilter = category && category !== 'all' ? { category } : {};
+    const styleFilter = style && style !== 'all' ? { style } : {};
+    const placeFilter = place && place !== 'all' ? { place } : {};
     const ratingFilter =
       rating && rating !== 'all'
         ? {
@@ -172,6 +212,8 @@ productRouter.get(
     const products = await Product.find({
       ...queryFilter,
       ...categoryFilter,
+      ...styleFilter,
+      ...placeFilter,
       ...priceFilter,
       ...ratingFilter,
     })
@@ -182,6 +224,8 @@ productRouter.get(
     const countProducts = await Product.countDocuments({
       ...queryFilter,
       ...categoryFilter,
+      ...styleFilter,
+      ...placeFilter,
       ...priceFilter,
       ...ratingFilter,
     });
@@ -202,11 +246,47 @@ productRouter.get(
   })
 );
 
+productRouter.get(
+  '/styles',
+  expressAsyncHandler(async (req, res) => {
+    const styles = await Product.find().distinct('style');
+    res.send(styles);
+  })
+);
+
+productRouter.get(
+  '/places',
+  expressAsyncHandler(async (req, res) => {
+    const places = await Product.find().distinct('place');
+    res.send(places);
+  })
+);
+
 productRouter.get('/slug/:slug', async (req, res) => {
   const product = await Product.findOne({ slug: { $eq: req.params.slug } });
 
   if (product) {
     res.send(product);
+  } else {
+    res.status(404).send({ message: 'Product Not Found' });
+  }
+});
+
+productRouter.get('/slug2/:slug', async (req, res) => {
+  const product = await Product.findOne({ slug: { $eq: req.params.slug } });
+
+  if (product) {
+    res.json({ countInDisplay: product.countInDisplay });
+  } else {
+    res.status(404).send({ message: 'Product Not Found' });
+  }
+});
+
+productRouter.get('/slug3/:slug', async (req, res) => {
+  const product = await Product.findOne({ slug: { $eq: req.params.slug } });
+
+  if (product) {
+    res.json({ countInStock: product.countInStock });
   } else {
     res.status(404).send({ message: 'Product Not Found' });
   }

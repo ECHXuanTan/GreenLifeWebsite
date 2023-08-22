@@ -69,6 +69,7 @@ export default function OrderHistoryScreen() {
               <th>Tổng tiền</th>
               <th>Thời gian thanh toán</th>
               <th>Vận chuyển</th>
+              <th></th>
             </tr>
           </thead>
           <tbody>

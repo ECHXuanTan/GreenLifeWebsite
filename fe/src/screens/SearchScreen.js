@@ -76,11 +76,30 @@ const categoryDisplayNames = {
     inDoor: 'Trong nhà',
   };
 
+const styleDisplayNames = {
+  big: 'Cây cao & lớn',
+  hang: 'Cây treo',
+  mini: 'Cây cảnh mini',
+  tropic: 'Cây nhiệt đới',
+};
+
+const placeDisplayNames = {
+  balcony: 'Cây trồng ban công',
+  inDoor: 'Cây trong bếp & nhà tắm',
+  office: 'Cây cảnh văn phòng',
+  outDoor: 'Cây trước cửa & hành lang',
+  table: 'Cây cảnh để bàn'
+};
+
+
+
 export default function SearchScreen() {
     const navigate = useNavigate();
     const { search } = useLocation();
     const sp = new URLSearchParams(search); // /search?category=Shirts
     const category = sp.get('category') || 'all';
+    const style = sp.get('style') || 'all';
+    const place = sp.get('place') || 'all';
     const query = sp.get('query') || 'all';
     const price = sp.get('price') || 'all';
     const rating = sp.get('rating') || 'all';
@@ -97,7 +116,7 @@ export default function SearchScreen() {
       const fetchData = async () => {
         try {
           const { data } = await axios.get(
-            `/api/products/search?page=${page}&query=${query}&category=${category}&price=${price}&rating=${rating}&order=${order}`
+            `/api/products/search?page=${page}&query=${query}&category=${category}&style=${style}&place=${place}&price=${price}&rating=${rating}&order=${order}`
           );
           dispatch({ type: 'FETCH_SUCCESS', payload: data });
         } catch (err) {
@@ -108,9 +127,11 @@ export default function SearchScreen() {
         }
       };
       fetchData();
-    }, [category, error, order, page, price, query, rating]);
+    }, [category, style, place, error, order, page, price, query, rating]);
   
     const [categories, setCategories] = useState([]);
+    const [styles, setStyles] = useState([]);
+    const [places, setPlaces] = useState([]);
     useEffect(() => {
       const fetchCategories = async () => {
         try {
@@ -121,21 +142,49 @@ export default function SearchScreen() {
         }
       };
       fetchCategories();
+
+      const fetchStyles = async () => {
+        try {
+          const { data } = await axios.get(`/api/products/styles`);
+          setStyles(data);
+        } catch (err) {
+          toast.error(getError(err));
+        }
+      };
+      fetchStyles();
+
+      const fetchPlaces = async () => {
+        try {
+          const { data } = await axios.get(`/api/products/places`);
+          setPlaces(data);
+        } catch (err) {
+          toast.error(getError(err));
+        }
+      };
+      fetchPlaces();
     }, [dispatch]);
   
     const getFilterUrl = (filter) => {
       const filterPage = filter.page || page;
       const filterCategory = filter.category || category;
+      const filterStyle = filter.style || style;
+      const filterPlace = filter.place || place;
       const filterQuery = filter.query || query;
       const filterRating = filter.rating || rating;
       const filterPrice = filter.price || price;
       const sortOrder = filter.order || order;
-      return `/search?category=${filterCategory}&query=${filterQuery}&price=${filterPrice}&rating=${filterRating}&order=${sortOrder}&page=${filterPage}`;
+      return `/search?category=${filterCategory}&query=${filterQuery}&style=${filterStyle}&place=${filterPlace}&price=${filterPrice}&rating=${filterRating}&order=${sortOrder}&page=${filterPage}`;
     };
 
     const renderCategoryName = (categoryValue) => {
         return categoryDisplayNames[categoryValue] || categoryValue;
       };
+    const renderStyleName = (styleValue) => {
+      return styleDisplayNames[styleValue] || styleValue;
+    };
+    const renderPlaceName = (placeValue) => {
+      return placeDisplayNames[placeValue] || placeValue;
+    };
 
     return (
       <div>
@@ -143,11 +192,11 @@ export default function SearchScreen() {
           <title>Tìm kiếm sản phẩm</title>
         </Helmet>
         <Row>
-          <Col md={3}>
+          <Col md={3} className='search-sidebar'>
             <h3>Danh mục</h3>
-            <div>
+            <div >
               <ul>
-                <li>
+                <li className='no-underline'>
                   <Link
                     className={'all' === category ? 'text-bold' : ''}
                     to={getFilterUrl({ category: 'all' })}
@@ -162,6 +211,52 @@ export default function SearchScreen() {
                       to={getFilterUrl({ category: c })}
                     >
                       {renderCategoryName(c)}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <h3>Kiểu dáng cây</h3>
+            <div>
+              <ul>
+                <li>
+                  <Link
+                    className={'all' === style ? 'text-bold' : ''}
+                    to={getFilterUrl({ style: 'all' })}
+                  >
+                    Tất cả sản phẩm
+                  </Link>
+                </li>
+                {styles.map((c) => (
+                  <li key={c}>
+                    <Link
+                      className={c === style ? 'text-bold' : ''}
+                      to={getFilterUrl({ style: c})} 
+                    >
+                      {renderStyleName(c)}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <h3>Theo vị trí đặt</h3>
+            <div>
+              <ul>
+                <li>
+                  <Link
+                    className={'all' === place ? 'text-bold' : ''}
+                    to={getFilterUrl({ place: 'all' })}
+                  >
+                    Tất cả sản phẩm
+                  </Link>
+                </li>
+                {places.map((c) => (
+                  <li key={c}>
+                    <Link
+                      className={c === place ? 'text-bold' : ''}
+                      to={getFilterUrl({ place: c})} 
+                    >
+                      {renderPlaceName(c)}
                     </Link>
                   </li>
                 ))}
@@ -223,26 +318,30 @@ export default function SearchScreen() {
               <>
                 <Row className="justify-content-between mb-3">
                   <Col md={6}>
-                    <div>
-                      {countProducts === 0 ? 'No' : countProducts} kết quả
+                    <div className='search-result-button'>
+                      {countProducts === 0 ? 'Không' : countProducts} kết quả
                       {query !== 'all' && ' : ' + query}
-                      {category !== 'all' && ' : ' + category}
-                      {price !== 'all' && ' : Price ' + price}
-                      {rating !== 'all' && ' : Rating ' + rating + ' & up'}
+                      {category !== 'all' && ' : ' + renderCategoryName(category)}
+                      {style !== 'all' && ' : ' + renderStyleName(style)}
+                      {place !== 'all' && ' : ' + renderPlaceName(place)}
+                      {price !== 'all' && ' : Giá ' + price}
+                      {rating !== 'all' && ' : Đánh giá ' + rating + ' & up'}
                       {query !== 'all' ||
                       category !== 'all' ||
+                      style !== 'all' ||
                       rating !== 'all' ||
                       price !== 'all' ? (
                         <Button
                           variant="light"
                           onClick={() => navigate('/search')}
+                          className='button-search'
                         >
                           <i className="fas fa-times-circle"></i>
                         </Button>
                       ) : null}
                     </div>
                   </Col>
-                  <Col className="text-end">
+                <Col className="text-end">
                   Sắp xếp theo{' '}
                     <select
                       value={order}

@@ -152,6 +152,8 @@ export default function ProductListScreen() {
                 <th>Tên sản phẩm</th>
                 <th>Đơn giá</th>
                 <th>Danh mục</th>
+                <th></th>
+                
               </tr>
             </thead>
             <tbody>

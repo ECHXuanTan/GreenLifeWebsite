@@ -18,6 +18,7 @@ import FloatingLabel from 'react-bootstrap/FloatingLabel';
 import { toast } from 'react-toastify';
 import { FacebookShareButton } from 'react-share';
 import { FaFacebook } from 'react-icons/fa';
+import ReactGA from 'react-ga4';
 
 const reducer = (state, action) => {
   switch (action.type) {
@@ -71,10 +72,15 @@ function ProductScreen() {
   const { state, dispatch: ctxDispatch } = useContext(Store);
   const { cart, userInfo } = state;
   const addToCartHandler = async () => {
+    ReactGA.event({
+      category: "Button",
+      action: "Add_to_cart",
+      label: "click", // optional
+    });
     const existItem = cart.cartItems.find((x) => x._id === product._id);
     const quantity = existItem ? existItem.quantity + 1 : 1;
     const { data } = await axios.get(`/api/products/${product._id}`);
-    if (data.countInStock < quantity) {
+    if (data.countInDisplay < quantity) {
       window.alert('Sorry. Product is out of stock');
       return;
     }
@@ -125,14 +131,14 @@ function ProductScreen() {
   ) : (
     <div>
       <Row className='product-detail'>
-        <Col md={6}>
+        <Col md={4}>
           <img
             className="img-large"
             src={product.image}
             alt={product.name}
           ></img>
         </Col>
-        <Col md={3}>
+        <Col md={5}>
           <ListGroup variant="flush">
             <ListGroup.Item>
               <Helmet>
@@ -178,7 +184,7 @@ function ProductScreen() {
                   <Row>
                     <Col>Trạng thái:</Col>
                     <Col>
-                      {product.countInStock > 0 ? (
+                      {product.countInDisplay > 0 ? (
                         <Badge bg="success">Còn hàng</Badge>
                       ) : (
                         <Badge bg="danger">Hết hàng</Badge>
@@ -187,7 +193,7 @@ function ProductScreen() {
                   </Row>
                 </ListGroup.Item>
 
-                {product.countInStock > 0 && (
+                {product.countInDisplay > 0 && (
                   <ListGroup.Item>
                     <div className="d-grid">
                     <Button onClick={addToCartHandler} variant="primary">Thêm vào giỏ hàng</Button>
@@ -219,7 +225,7 @@ function ProductScreen() {
         <div className="my-3">
           {userInfo ? (
             <form onSubmit={submitHandler}>
-              <h2>Gửi đánh giá của bạn</h2>
+              <h2>Gửi nhận xét của bạn</h2>
               <Form.Group className="mb-3" controlId="rating">
                 <Form.Label>Đánh giá</Form.Label>
                 <Form.Select
@@ -227,12 +233,12 @@ function ProductScreen() {
                   value={rating}
                   onChange={(e) => setRating(e.target.value)}
                 >
-                  <option value="">Select...</option>
-                  <option value="1">1- Poor</option>
-                  <option value="2">2- Fair</option>
-                  <option value="3">3- Good</option>
-                  <option value="4">4- Very good</option>
-                  <option value="5">5- Excelent</option>
+                  <option value="">Xếp hạng sản phẩm...</option>
+                  <option value="1">1- Rất tệ</option>
+                  <option value="2">2- Tệ</option>
+                  <option value="3">3- Tốt</option>
+                  <option value="4">4- Rất tốt</option>
+                  <option value="5">5- Xuất sắc</option>
                 </Form.Select>
               </Form.Group>
               <FloatingLabel

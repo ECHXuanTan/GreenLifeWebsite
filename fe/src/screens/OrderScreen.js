@@ -14,7 +14,7 @@ import { Store } from '../store';
 import { getError } from '../utils';
 import { toast } from 'react-toastify';
 import Button from 'react-bootstrap/Button';
-
+import ReactGA from 'react-ga4';
 
 function reducer(state, action) {
   switch (action.type) {
@@ -48,10 +48,6 @@ function reducer(state, action) {
       return state;
   }
 }
-
-const instance = axios.create({
-  baseURL: 'http://localhost:5000',
-});
 
 export default function OrderScreen() {
   const { state } = useContext(Store);
@@ -109,8 +105,35 @@ export default function OrderScreen() {
             headers: { authorization: `Bearer ${userInfo.token}` },
           }
         );
+        
+        // Update the countInDisplay for each item
+        const updatedItems = order.orderItems.map(item => {
+          return {
+            ...item,
+            countInDisplay: item.countInDisplay - item.quantity
+          };
+        });
+  
+        // Make an API call to update the item countInDisplay
+        await Promise.all(
+          updatedItems.map(async item => {
+            await axios.put(
+              `/api/products/paid/${item._id}`, // Change this to the correct endpoint
+              { countInDisplay: item.countInDisplay },
+              {
+                headers: { authorization: `Bearer ${userInfo.token}` },
+              }
+            );
+          })
+        );
+  
         dispatch({ type: 'PAY_SUCCESS', payload: data });
         toast.success('Thanh toán thành công');
+        ReactGA.gtag('event', 'purchase', {
+          transaction_id: order._id,
+          value: order.totalPrice,
+          currency: 'VND',
+        });
       } catch (err) {
         dispatch({ type: 'PAY_FAIL', payload: getError(err) });
         toast.error(getError(err));
@@ -122,7 +145,7 @@ export default function OrderScreen() {
   }
 
   useEffect(() => {
-
+    
     
 
      // Create a URLSearchParams object
@@ -147,15 +170,48 @@ export default function OrderScreen() {
         headers: { authorization: `Bearer ${userInfo.token}` },
       }
     )
-    .then(() => {
-      toast.success('Thanh toán thành công');
-      // Refresh the order details
-      fetchOrder();
-      window.history.replaceState({}, document.title, window.location.pathname);
-    })
+    .then(() => handlePaymentSuccess())
     .catch((error) => {
       console.error('Error updating order status:', error);
     });
+  }
+
+  async function handlePaymentSuccess() {
+    try {
+      toast.success('Thanh toán thành công');
+      
+      // Update the countInDisplay for each item
+      const updatedItems = order.orderItems.map(item => {
+        return {
+          ...item,
+          countInDisplay: item.countInDisplay - item.quantity
+        };
+      });
+      
+      // Make an API call to update the item countInDisplay
+      await Promise.all(
+        updatedItems.map(async item => {
+          await axios.put(
+            `/api/products/paid/${item._id}`, // Change this to the correct endpoint
+            { countInDisplay: item.countInDisplay },
+            {
+              headers: { authorization: `Bearer ${userInfo.token}` },
+            }
+          );
+        })
+      );
+  
+      // Refresh the order details
+      await fetchOrder();
+      ReactGA.gtag('event', 'purchase', {
+        transaction_id: order._id,
+        value: order.totalPrice,
+        currency: 'VND',
+      });
+      window.history.replaceState({}, document.title, window.location.pathname);
+    } catch (error) {
+      console.error('Error updating order status:', error);
+    }
   }
 
     const fetchOrder = async () => {
@@ -164,7 +220,24 @@ export default function OrderScreen() {
         const { data } = await axios.get(`/api/orders/${orderId}`, {
           headers: { authorization: `Bearer ${userInfo.token}` },
         });
-        dispatch({ type: 'FETCH_SUCCESS', payload: data });
+        const orderItemsWithCounts = await Promise.all(
+          data.orderItems.map(async (item) => {
+            const countInDisplay = await fetchCountInDisplay(item.slug);
+            const countInStock = await fetchCountInStock(item.slug);
+            return {
+              ...item,
+              countInDisplay,
+              countInStock,
+            };
+          })
+        );
+        dispatch({
+          type: 'FETCH_SUCCESS',
+          payload: {
+            ...data,
+            orderItems: orderItemsWithCounts,
+          },
+        });
       } catch (err) {
         dispatch({ type: 'FETCH_FAIL', payload: getError(err) });
       }
@@ -212,6 +285,8 @@ export default function OrderScreen() {
     successDeliver,
   ]);
 
+  
+
   async function deliverOrderHandler() {
     try {
       dispatch({ type: 'DELIVER_REQUEST' });
@@ -222,8 +297,31 @@ export default function OrderScreen() {
           headers: { authorization: `Bearer ${userInfo.token}` },
         }
       );
+
+      // Update the countInStock for each item
+      const updatedItems = order.orderItems.map(item => {
+        return {
+          ...item,
+          countInStock: item.countInStock - item.quantity
+        };
+      });
+
+      // Make an API call to update the item countInStocky
+      await Promise.all(
+        updatedItems.map(async item => {
+          await axios.put(
+            `/api/products/delivered/${item._id}`, // Change this to the correct endpoint
+            { countInStock: item.countInStock },
+            {
+              headers: { authorization: `Bearer ${userInfo.token}` },
+            }
+          );
+        })
+      );
+
+
       dispatch({ type: 'DELIVER_SUCCESS', payload: data });
-      toast.success('Order is delivered');
+      toast.success('Đơn hàng đã được giao');
     } catch (err) {
       toast.error(getError(err));
       dispatch({ type: 'DELIVER_FAIL' });
@@ -233,7 +331,7 @@ export default function OrderScreen() {
   function onVnpayClick() {
     const returnUrl = `http://localhost:3000/order/${order._id}`
 
-    instance.get('/api/vnpayRouter/create_payment_url', {
+    axios.get('/api/vnpayRouter/create_payment_url', {
       params: {
         amount: order.totalPrice, // Set the amount as order.totalPrice
         returnUrl,
@@ -245,6 +343,39 @@ export default function OrderScreen() {
       console.error('Error fetching VNPAY URL', error);
     });
   }
+
+  async function fetchCountInDisplay(slug) {
+    try {
+      const response = await axios.get(`/api/products/slug2/${slug}`);
+      if (response.status === 200) {
+        const data = response.data;
+        return data.countInDisplay;
+      } else {
+        throw new Error('Product Not Found');
+      }
+    } catch (error) {
+      console.error('Error fetching countInDisplay:', error.message);
+      return null; // or throw an error if you prefer
+    }
+  }
+
+  async function fetchCountInStock(slug) {
+    try {
+      const response = await axios.get(`/api/products/slug3/${slug}`);
+      if (response.status === 200) {
+        const data = response.data;
+        return data.countInStock;
+      } else {
+        throw new Error('Product Not Found');
+      }
+    } catch (error) {
+      console.error('Error fetching countInStock:', error.message);
+      return null; // or throw an error if you prefer
+    }
+  }
+
+  console.log('c', fetchCountInStock('cay-trau-ba-cot-chau-xi-mang'));
+
   return loading ? (
     <LoadingBox></LoadingBox>
   ) : error ? (
@@ -265,6 +396,7 @@ export default function OrderScreen() {
                 <strong>Số điện thoại:</strong> {order.shippingAddress.phoneNumber} <br />
                 <strong>Địa chỉ: </strong> {order.shippingAddress.address}, {order.shippingAddress.district},
                 {order.shippingAddress.city}, 
+                
               </Card.Text>
               {order.isDelivered ? (
                 <MessageBox variant="success">
@@ -296,18 +428,18 @@ export default function OrderScreen() {
                 {order.orderItems.map((item) => (
                   <ListGroup.Item key={item._id}>
                     <Row className="align-items-center">
-                      <Col md={6}>
+                      <Col md={7}>
                         <img
                           src={item.image}
                           alt={item.name}
                           className="img-fluid rounded img-thumbnail"
                         ></img>{' '}
-                        <Link to={`/product/${item.slug}`}>{item.name}</Link>
+                        <Link className='text-decoration-none' to={`/product/${item.slug}`}>{item.name}</Link>
                       </Col>
                       <Col md={3}>
                         <span>{item.quantity}</span>
                       </Col>
-                      <Col md={3}>{item.price}đ</Col>
+                      <Col md={2}>{item.price}đ</Col>
                     </Row>
                   </ListGroup.Item>
                 ))}
@@ -349,33 +481,47 @@ export default function OrderScreen() {
                   </Row>
                 </ListGroup.Item>
                 {!order.isPaid && (
-                  <ListGroup.Item>
-                    {isPending ? (
-                      <LoadingBox />
-                    ) : (
-                      <div>
-                        <PayPalButtons
-                          createOrder={createOrder}
-                          onApprove={onApprove}
-                          onError={onError}
-                        ></PayPalButtons>
-                      </div>
-                    )}
-                    {loadingPay && <LoadingBox></LoadingBox>}
+                <ListGroup.Item>
+                  {isPending ? (
+                    <LoadingBox />
+                  ) : (
                     <div>
-                      <button className="vnpay-button-style" onClick={onVnpayClick}>
-                        VNPAY
-                      </button>
+                      {/* Check if item quantity is greater than countInDisplay */}
+                      {order.orderItems.every(item => item.quantity <= item.countInDisplay) ? (
+                        <>
+                          <PayPalButtons
+                            createOrder={createOrder}
+                            onApprove={onApprove}
+                            onError={onError}
+                          ></PayPalButtons>
+                          <button className="vnpay-button-style" onClick={onVnpayClick}>
+                            VNPAY
+                          </button>
+                        </>
+                      ) : (
+                        <MessageBox variant="danger">
+                          Sản phẩm không còn đủ số lượng để thanh toán.
+                        </MessageBox>
+                      )}
                     </div>
-                  </ListGroup.Item>
-                )}
+                  )}
+                  {loadingPay && <LoadingBox></LoadingBox>}
+                </ListGroup.Item>
+              )}
                 {userInfo.isAdmin && order.isPaid && !order.isDelivered && (
                   <ListGroup.Item>
-                    {loadingDeliver && <LoadingBox></LoadingBox>}
+                    {loadingDeliver && <LoadingBox />}
                     <div className="d-grid">
-                      <Button type="button" onClick={deliverOrderHandler}>
-                        Giao Hàng
-                      </Button>
+                    {order.orderItems.every(item => item.quantity > item.countInStock) ? (
+                        <MessageBox variant="danger">
+                        Sản phẩm không đủ số lượng để giao hàng.
+                      </MessageBox>
+                      ) : (
+                        <Button type="button" onClick={deliverOrderHandler}>
+                          Giao Hàng
+                        </Button>
+                        
+                      )}
                     </div>
                   </ListGroup.Item>
                 )}

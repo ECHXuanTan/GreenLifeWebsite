@@ -63,32 +63,6 @@ router.get('/create_payment_url', (req, res) => {
   res.json({url: vnpUrl});
 });
 
-router.get('/return', function (req, res, next) {
-let vnp_Params = req.query;
-
-let secureHash = vnp_Params['vnp_SecureHash'];
-
-delete vnp_Params['vnp_SecureHash'];
-delete vnp_Params['vnp_SecureHashType'];
-
-vnp_Params = sortObject(vnp_Params);
-
-let secretKey = "GIWEUTHSLDXKKCZSSHUCDZNRXUVUXZPV";
-
-let signData = querystring.stringify(vnp_Params, { encode: false });
-let hmac = crypto.createHmac("sha512", secretKey);
-let signed = hmac.update(new Buffer(signData, 'utf-8')).digest("hex");     
-
-if(secureHash === signed){
-  //Kiem tra xem du lieu trong db co hop le hay khong va thong bao ket qua
-  console.log(vnp_Params['vnp_ResponseCode']);
-} else{
-  console.log(vnp_Params['vnp_ResponseCode']);
-}
-res.send('Transaction result received. Check the server logs for vnp_ResponseCode.');
-
-});
-
 function sortObject(obj) {
 let sorted = {};
 let str = [];

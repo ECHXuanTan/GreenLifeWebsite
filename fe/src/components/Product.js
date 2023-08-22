@@ -5,7 +5,7 @@ import Rating from './Rating';
 import axios from 'axios';
 import { useContext } from 'react';
 import { Store } from '../store';
-
+import ReactGA from 'react-ga4';
 
 function Product(props) {
   const { product } = props;
@@ -16,11 +16,16 @@ function Product(props) {
   } = state;
 
   const addToCartHandler = async (item) => {
+    ReactGA.event({
+      category: "Button",
+      action: "Add_to_cart",
+      label: "click", // optional
+    });
     const existItem = cartItems.find((x) => x._id === product._id);
     const quantity = existItem ? existItem.quantity + 1 : 1;
     const { data } = await axios.get(`/api/products/${item._id}`);
-    if (data.countInStock < quantity) {
-      window.alert('Sorry. Product is out of stock');
+    if (data.countInDisplayk < quantity) {
+      window.alert('Xin lỗi! Sản phẩm đã hết hàng');
       return;
     }
     ctxDispatch({
@@ -36,12 +41,12 @@ function Product(props) {
         <img src={product.image} className="card-img-top" alt={product.name} />
       </Link>
       <Card.Body>
-        <Link to={`/product/${product.slug}`}>
-          <Card.Title>{product.name}</Card.Title>
+        <Link className="text-decoration-none" to={`/product/${product.slug}`}>
+          <Card.Title className='product-name'>{product.name}</Card.Title>
         </Link>
         <Rating rating={product.rating} numReviews={product.numReviews} />
         <Card.Text>{product.price}đ</Card.Text>
-        {product.countInStock === 0 ? (
+        {product.countInDisplay === 0 ? (
           <Button variant="light" disabled>
             Hết hàng
           </Button>

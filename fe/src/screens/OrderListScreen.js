@@ -108,6 +108,7 @@ export default function OrderListScreen() {
               <th>Tổng đơn</th>
               <th>Thanh toán</th>
               <th>Vận chuyển</th>
+              <th></th>
             </tr>
           </thead>
           <tbody>
